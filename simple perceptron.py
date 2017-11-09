@@ -29,8 +29,8 @@ def t(k):
     else:
         return 1
 
-
-while True:
+classified = False
+while classified == False:
     classified = True
     for i in range(N * 2):
         delta_w = (t(i) - y(x[i])) * x[i]
@@ -38,10 +38,6 @@ while True:
         w += delta_w
         b += delta_b
         classified *= all(delta_w == 0) * (delta_b == 0)
-    if classified:
-        break
 
 print(y([0, 0]))
 print(y([5, 5]))
-
-
