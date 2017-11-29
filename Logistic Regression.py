@@ -23,8 +23,8 @@ correct_prediction = tf.equal(tf.to_float(tf.greater(y,0.5)),t)
 モデル学習
 """
 # ORゲート
-x = np.array([[0, 0],[0, 1],[1, 0],[1, 1]])
-y = np.array([[0],[1],[1],[1]])
+X = np.array([[0, 0],[0, 1],[1, 0],[1, 1]])
+Y = np.array([[0],[1],[1],[1]])
 # モデル定義で宣言した変数・式の初期化
 init = tf.global_variables_initializer()
 sess = tf.Session()
