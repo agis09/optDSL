@@ -21,7 +21,7 @@ V = tf.Variable(tf.truncated_normal([2, 1]))
 c = tf.Variable(tf.zeros([1]))
 y = tf.nn.sigmoid(tf.matmul(h, V) + c)
 
-cross_entropy = tf.reduce_sum(t * tf.log(y) + (1 - t) * tf.log(1 - y))
+cross_entropy = -tf.reduce_sum(t * tf.log(y) + (1 - t) * tf.log(1 - y))
 
 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.to_float(tf.greater(y, 0.5)), t)
