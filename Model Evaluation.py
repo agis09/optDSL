@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 from sklearn import datasets
-from skleran.utils import shuffle
+from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
 
