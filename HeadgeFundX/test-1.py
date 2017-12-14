@@ -4,6 +4,7 @@ import datetime
 import csv
 import os
 import tensorflow as tf
+import keras
 from keras.models import Sequential
 from keras.layers import Dense, Activation
 from keras.layers.core import Dropout
@@ -16,15 +17,16 @@ from keras import backend as K
 from keras.layers.normalization import BatchNormalization
 from keras.initializers import TruncatedNormal
 
-df = pd.read_csv("train.csv", encoding="SHIFT-JIS")
+df = pd.read_csv("train_copy.csv", encoding="SHIFT-JIS")
 
-X = df.loc[:, "c1":"c88"]
+X = df.loc[0:39999, "c1":"c88"]
 X = X.as_matrix().astype('double')
-Y = df.loc[:, "target"]
+Y = df.loc[0:39999, "target"]
 Y = Y.as_matrix().astype('double')
 Y = np.reshape(Y, (len(Y), 1))
 print("X", X)
 print('Y', Y)
+
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
 
@@ -36,13 +38,13 @@ def weight_variable(shape):
 
 
 n_hiddens = []  # 隠れ層
-epochs = 1000
+epochs = 10
 result_acc = []
 result_loss = []
 best_acc = [0.0, 0, 0, 0]
 best_loss = [1.0, 0, 0, 0]
 
-for times in range(2, 5):
+for times in range(2, 3):
     layer_loop = times
     for i in range(layer_loop):
         n_hiddens.append(100)
@@ -61,9 +63,8 @@ for times in range(2, 5):
 
     model.add(Dense(n_out, kernel_initializer=TruncatedNormal(stddev=0.01)))
     model.add(Activation('sigmoid'))
-    learning_late = 0.01
     model.compile(loss='binary_crossentropy',
-                  optimizer=SGD(lr=learning_late, momentum=0.09),
+                  optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999),
                   metrics=['accuracy'])
 
     """モデル学習"""
@@ -73,6 +74,11 @@ for times in range(2, 5):
     hist = model.fit(X_train, Y_train, epochs=epochs,
                      batch_size=batch_size,
                      validation_data=(X_test, Y_test))
+
+    """save weights"""
+    json_string = model.to_json()
+    open('layer'+str(times)+'_model.json', 'w').write(json_string)
+    model.save_weights('layer'+str(times)+'_weights.hdf5')
 
     """予測精度評価"""
     print(model.evaluate(X_test, Y_test))
@@ -120,4 +126,3 @@ with open('{0:%m%d%H%M%S}'.format(datetime.datetime.now())+'result.csv', 'a', ne
     csvWriter.writerow(best_acc)
     csvWriter.writerow(['best_loss', 'layer_num'])
     csvWriter.writerow(best_loss)
-
