@@ -39,13 +39,13 @@ def weight_variable(shape):
 
 
 n_hiddens = []  # 隠れ層
-epochs = 2000
+epochs = 100
 result_acc = []
 result_loss = []
 best_acc = [0.0, 0, 0, 0]
 best_loss = [1.0, 0, 0, 0]
 
-for times in range(1, 3):
+for times in range(1, 2):
     layer_loop = times
     for i in range(layer_loop):
         n_hiddens.append(100)
@@ -67,7 +67,6 @@ for times in range(1, 3):
     model.compile(loss='binary_crossentropy',
                   optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999),
                   metrics=['accuracy'])
-    model.load_weights('layer1_weights.hdf5')
 
     """モデル学習"""
     # epochs = 100
@@ -77,6 +76,10 @@ for times in range(1, 3):
                      batch_size=batch_size,
                      validation_data=(X_test, Y_test))
 
+    """save weights"""
+    json_string = model.to_json()
+    open('layer'+str(times)+'_model.json', 'w').write(json_string)
+    model.save_weights('layer'+str(times)+'_weights.hdf5')
 
     """予測精度評価"""
     print(model.evaluate(X_test, Y_test))
